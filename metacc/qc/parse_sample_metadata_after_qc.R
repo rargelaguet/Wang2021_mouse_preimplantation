@@ -32,22 +32,19 @@ args <- p$parse_args(commandArgs(TRUE))
 ## Load metadata ##
 ###################
 
-sample_metadata_met.dt <- fread(args$metadata_met)
-sample_metadata_acc.dt <- fread(args$metadata_acc)
+cell_metadata_met.dt <- fread(args$metadata_met)
+cell_metadata_acc.dt <- fread(args$metadata_acc)
 
 ###########
 ## Merge ##
 ###########
 
-sample_metadata.dt <- merge(sample_metadata_met.dt[,c("cell","pass_metQC","nCG","met_rate")], sample_metadata_acc.dt, by="cell") %>% 
-  .[,c("cell", "sample", "id_met", "id_acc", "plate", "id_rna", "method", "embryo", "stage", "nCount_RNA", "nFeature_RNA", 
-  "mit_percent_RNA", "rib_percent_RNA", "celltype", "celltype2", "celltype3", "celltype.score", "closest.cell", "nCG","met_rate", "nGC", "acc_rate", "pass_rnaQC", "pass_metQC", "pass_accQC"
-  )]
+cell_metadata.dt <- merge(cell_metadata_met.dt[,c("cell","pass_metQC","nCG","met_rate")], cell_metadata_acc.dt, by="cell")
 
-print(head(sample_metadata.dt))
+print(head(cell_metadata.dt))
 
 ##########
 ## Save ##
 ##########
 
-fwrite(sample_metadata.dt, args$outfile, sep="\t", na = "NA", quote=F)
+fwrite(cell_metadata.dt, args$outfile, sep="\t", na = "NA", quote=F)

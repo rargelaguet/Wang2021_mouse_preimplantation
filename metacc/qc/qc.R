@@ -25,7 +25,7 @@ args <- p$parse_args(commandArgs(TRUE))
 
 ## START TEST ##
 # args <- list()
-# args$metadata <- file.path(io$basedir,"results/met/stats/sample_metadata_after_met_stats.txt.gz")
+# args$metadata <- file.path(io$basedir,"results/met/stats/cell_metadata_after_met_stats.txt.gz")
 # args$context <- "CG"
 # args$minimum_number_sites <- 5e3; args$min_rate <- 0; args$max_rate <- 100 # CG
 # # args$minimum_number_sites <- 1e4; args$min_rate <- 10; args$max_rate <- 40 # GC
@@ -42,16 +42,16 @@ dir.create(args$outdir, showWarnings = F)
 ## Load metadata ##
 ###################
 
-sample_metadata <- fread(args$metadata)
+cell_metadata.dt <- fread(args$metadata)
 
 ##############################
 ## Barplots before QC calls ##
 ##############################
 
 if (args$context=="CG") {
-  to.plot <- sample_metadata %>% .[!is.na(id_met)] %>% setnames(c("nCG","met_rate"),c("N","rate"))
+  to.plot <- cell_metadata.dt %>% .[!is.na(id_met)] %>% setnames(c("nCG","met_rate"),c("N","rate"))
 } else if (args$context=="GC") {
-  to.plot <- sample_metadata %>% .[!is.na(id_acc)] %>% setnames(c("nGC","acc_rate"),c("N","rate"))
+  to.plot <- cell_metadata.dt %>% .[!is.na(id_acc)] %>% setnames(c("nGC","acc_rate"),c("N","rate"))
 }
 
 to.plot %>% setkey(N) %>% .[,cell:=factor(cell,levels=cell)]
@@ -76,11 +76,11 @@ dev.off()
 ##############
 
 if (args$context=="CG") {
-  sample_metadata %>% .[,pass_metQC:=met_rate<=args$max_rate & met_rate>=args$min_rate & nCG>=args$minimum_number_sites]
-  table(sample_metadata$pass_metQC)
+  cell_metadata.dt %>% .[,pass_metQC:=met_rate<=args$max_rate & met_rate>=args$min_rate & nCG>=args$minimum_number_sites]
+  table(cell_metadata.dt$pass_metQC)
 } else if (args$context=="GC") {
-  sample_metadata %>% .[,pass_accQC:=acc_rate<=args$max_rate & acc_rate>=args$min_rate & nGC>=args$minimum_number_sites]
-  table(sample_metadata$pass_accQC)
+  cell_metadata.dt %>% .[,pass_accQC:=acc_rate<=args$max_rate & acc_rate>=args$min_rate & nGC>=args$minimum_number_sites]
+  table(cell_metadata.dt$pass_accQC)
 }
 
 #########################################################
@@ -88,12 +88,12 @@ if (args$context=="CG") {
 #########################################################
 
 if (args$context=="CG") {
-  to.plot <- sample_metadata %>% .[!is.na(id_met)] %>% .[,mean(pass_metQC,na.rm=T), by=c("plate","sample")]
+  to.plot <- cell_metadata.dt %>% .[!is.na(id_met)] %>% .[,mean(pass_metQC,na.rm=T), by=c("embryo")]
 } else if (args$context=="GC") {
-  to.plot <- sample_metadata %>% .[!is.na(id_acc)]  %>% .[,mean(pass_accQC,na.rm=T), by=c("plate","sample")]
+  to.plot <- cell_metadata.dt %>% .[!is.na(id_acc)]  %>% .[,mean(pass_accQC,na.rm=T), by=c("embryo")]
 }
 
-p <- ggbarplot(to.plot, x="plate", y="V1", fill="gray70") +
+p <- ggbarplot(to.plot, x="embryo", y="V1", fill="gray70") +
   # scale_fill_manual(values=opts$stage.colors) +
   labs(x="", y="Fraction of cells that pass QC") +
   # facet_wrap(~stage)
@@ -113,21 +113,21 @@ dev.off()
 #############################
 
 if (args$context=="CG") {
-  to.plot <- sample_metadata %>% .[pass_metQC==TRUE] %>% setnames(c("nCG","met_rate"),c("N","rate"))
+  to.plot <- cell_metadata.dt %>% .[pass_metQC==TRUE] %>% setnames(c("nCG","met_rate"),c("N","rate"))
 } else if (args$context=="GC") {
-  to.plot <- sample_metadata %>% .[pass_accQC==TRUE] %>% setnames(c("nGC","acc_rate"),c("N","rate"))
+  to.plot <- cell_metadata.dt %>% .[pass_accQC==TRUE] %>% setnames(c("nGC","acc_rate"),c("N","rate"))
 }
 
 to.plot.melted <- to.plot %>% 
   .[,log10_N:=log10(N)] %>%
-  melt(id.vars=c("plate","cell","sample"), measure.vars=c("log10_N","rate")) 
+  melt(id.vars=c("embryo","cell"), measure.vars=c("log10_N","rate")) 
 
 # tmp <- data.table(
 #   variable = c("log10_N", "rate","rate"),
 #   value = c(log10(args$minimum_number_sites), args$min_rate, args$max_rate)
 # )
 
-p <- ggplot(to.plot.melted, aes_string(x="plate", y="value")) +
+p <- ggplot(to.plot.melted, aes_string(x="embryo", y="value")) +
     geom_jitter(size=0.5, alpha=0.5, width=0.1) +
     geom_boxplot(outlier.shape=NA, coef=1, fill="gray70", alpha=0.8) +
     facet_wrap(~variable, scales="free_y", nrow=1, labeller = as_labeller(c("log10_N"="Num. of observations", "rate"="Rate"))) +
@@ -152,10 +152,10 @@ dev.off()
 ############################################################
 
 if (args$context=="CG") {
-  to.plot <- copy(sample_metadata) %>% .[!is.na(id_met)] %>% 
+  to.plot <- copy(cell_metadata.dt) %>% .[!is.na(id_met)] %>% 
     setnames(c("nCG","met_rate"),c("N","rate")) %>% setnames("pass_metQC","pass_QC")
 } else if (args$context=="GC") {
-  to.plot <- copy(sample_metadata) %>% .[!is.na(id_acc)] %>% 
+  to.plot <- copy(cell_metadata.dt) %>% .[!is.na(id_acc)] %>% 
     setnames(c("nGC","acc_rate"),c("N","rate")) %>% setnames("pass_accQC","pass_QC")
 }
 
@@ -177,9 +177,9 @@ dev.off()
 ##########
 
 if (args$context=="CG") {
-  io$outfile <- file.path(args$outdir, "sample_metadata_after_met_qc.txt.gz")
+  io$outfile <- file.path(args$outdir, "cell_metadata_after_met_qc.txt.gz")
 } else if (args$context=="GC") {
-  io$outfile <- file.path(args$outdir, "sample_metadata_after_acc_qc.txt.gz")
+  io$outfile <- file.path(args$outdir, "cell_metadata_after_acc_qc.txt.gz")
 }
 
-fwrite(sample_metadata, io$outfile, sep="\t", na = "NA", quote=F)
+fwrite(cell_metadata.dt, io$outfile, sep="\t", na = "NA", quote=F)

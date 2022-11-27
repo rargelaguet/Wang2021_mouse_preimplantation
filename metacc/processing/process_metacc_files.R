@@ -13,7 +13,7 @@ io$outdir <- file.path(io$basedir,"processed/met/cpg_level"); dir.create(io$outd
 opts$context <- "CG"
 
 # io$indir <- file.path(io$basedir,"original/acc")
-# io$outdir <- file.path(io$basedir,"processed/acc/cpg_level"); dir.create(io$outdir, showWarnings=F)
+# io$outdir <- file.path(io$basedir,"processed/acc/gpc_level"); dir.create(io$outdir, showWarnings=F)
 # opts$context <- "GC"
 
 ##################
