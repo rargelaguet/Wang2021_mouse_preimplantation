@@ -97,7 +97,8 @@ for (i in args$samples) {
   
   # Load data
   data.dt <- fread(sprintf("%s/%s.tsv.gz",args$indir,i), showProgress = F) %>%
-      .[,c("chr","pos","rate")] %>%
+      setnames(c("chr","pos","rate")) %>%
+      # .[,c("chr","pos","rate")] %>%
       .[chr%in%opts$chr & !is.na(pos)] %>% 
       .[,c("start","end"):=pos] %>% .[,pos:=NULL] %>%
     setkey(chr,start,end)

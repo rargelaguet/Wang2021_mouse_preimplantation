@@ -12,20 +12,17 @@ suppressPackageStartupMessages(library(argparse))
 
 io <- list()
 if (Sys.info()[['nodename']]=="rargelaguet.local") {
-  # io$basedir <- "/Users/rargelaguet/data/scnmt_gastrulation"
-  io$basedir <- "/Users/rargelaguet/data/Wang2021"
+  io$basedir <- "/Users/rargelaguet/data/Wang2021_mouse_preimplantation"
   io$gene.metadata <- io$gene_metadata <- "/Users/rargelaguet/data/ensembl/mouse/v87/BioMart/all_genes/Mmusculus_genes_BioMart.87.txt"
   io$mm10.genome <- "/Users/rargelaguet/data/mm10_sequence/mm10.genome"
 } else if (Sys.info()[['nodename']]=="BI2404M") {
-  # io$basedir <- "/Users/argelagr/data/scnmt_gastrulation"
-  io$basedir <- "/Users/argelagr/data/Wang2021"
+  io$basedir <- "/Users/argelagr/data/Wang2021_mouse_preimplantation"
   io$gene.metadata <- io$gene_metadata <- "/Users/argelagr/data/ensembl/mouse/v87/BioMart/all_genes/Mmusculus_genes_BioMart.87.txt"
   io$mm10.genome <- "/Users/argelagr/data/mm10_sequence/mm10.genome"
 } else if (grepl("pebble|headstone", Sys.info()['nodename'])) {
     if (grepl("argelag", Sys.info()['effective_user'])) {
-      io$basedir <- "/bi/group/reik/ricard/data/Wang2021"
+      io$basedir <- "/bi/group/reik/ricard/data/Wang2021_mouse_preimplantation"
       io$atlas.basedir <- "/bi/group/reik/ricard/data/pijuansala2019_gastrulation10x"
-      io$multiome.basedir <- "/bi/group/reik/ricard/data/gastrulation_multiome_10x"
       io$gene.metadata <- io$gene_metadata <- "/bi/group/reik/ricard/data/ensembl/mouse/v87/BioMart/all_genes/Mmusculus_genes_BioMart.87.txt"
       io$mm10.genome <- "/bi/group/reik/ricard/data/mm10_sequence/mm10.genome"
     }
@@ -57,7 +54,7 @@ io$features.dir <- paste0(io$basedir,"/features/genomic_contexts")
 
 opts <- list()
 
-opts$celltypes = c(
+opts$celltypes <- opts$stages <- c(
   "zygote",
   "2cell", 
   "early_4cell", 

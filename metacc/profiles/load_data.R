@@ -12,7 +12,8 @@ for (i in opts$met.cells) {
   print(i)
   # met_list[[i]] <- fread(sprintf("%s/%s.tsv.gz",io$met_data_raw,i), select = c(1,2,3,4), colClasses = c("chr"="factor", "start"="integer", "end"="integer", "rate"="numeric")) %>% 
   met_list[[i]] <- fread(sprintf("%s/%s.tsv.gz",io$met_data_raw,i), colClasses = c("chr"="character", "pos"="integer", "rate"="numeric")) %>% 
-    .[,chr:=ifelse(grepl("chr",chr),chr,paste0("chr",chr))] %>%
+    setnames(c("chr","pos","rate")) %>%
+    # .[,chr:=ifelse(grepl("chr",chr),chr,paste0("chr",chr))] %>%
     .[,id_met:=as.factor(i)] %>% 
     .[,c("start","end"):=pos] %>%
     setkey("chr","start","end") %>%
@@ -42,7 +43,8 @@ for (i in opts$acc.cells) {
   print(i)
   # acc_list[[i]] <- fread(sprintf("%s/%s.tsv.gz",io$acc_data_raw,i), select = c(1,2,3,4), colClasses = c("chr"="factor", "start"="integer", "end"="integer", "rate"="numeric")) %>% 
   acc_list[[i]] <- fread(sprintf("%s/%s.tsv.gz",io$acc_data_raw,i), colClasses = c("chr"="character", "pos"="integer", "rate"="numeric")) %>% 
-    .[,chr:=ifelse(grepl("chr",chr),chr,paste0("chr",chr))] %>%
+    setnames(c("chr","pos","rate")) %>%
+    # .[,chr:=ifelse(grepl("chr",chr),chr,paste0("chr",chr))] %>%
     .[,id_acc:=as.factor(i)] %>% 
     .[,c("start","end"):=pos] %>%
     setkey("chr","start","end") %>%

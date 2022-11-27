@@ -84,9 +84,10 @@ metacc_coupling.dt <- sample_metadata$cell %>% map(function(i) {
   print(i)
   
   # Chromatin accessibility
-  acc_dt <- fread(sprintf("%s/%s.tsv.gz",io$acc_data_raw,sample_metadata[cell==i,id_acc]), showProgress = F, header = T,
-                  select = c("chr"="character", "pos"="integer", "rate"="integer")) %>%
-    .[,chr:=ifelse(grepl("chr",chr),chr,paste0("chr",chr))] %>%
+  acc_dt <- fread(sprintf("%s/%s.tsv.gz",io$acc_data_raw,sample_metadata[cell==i,id_acc]), showProgress = F, header = F) %>%
+                  # select = c("chr"="character", "pos"="integer", "rate"="integer")) %>%
+    setnames(c("chr","pos","rate")) %>%
+    # .[,chr:=ifelse(grepl("chr",chr),chr,paste0("chr",chr))] %>%
     setnames("pos","bp") %>% .[,c("start","end"):=list(bp,bp)] %>%
     setkey("chr","start","end") %>%
     

@@ -1,8 +1,6 @@
-
 import os
 from re import search
 import getpass
-
 
 ############
 ## Config ##
@@ -13,8 +11,6 @@ if search("BI2404M", host) and getpass.getuser()=="argelagr":
     configfile: "config_ricard_local.yaml"
 elif search("[headstone|pebble]", host) and getpass.getuser()=="argelagr":
     configfile: "config_ricard_babraham.yaml"
-elif search("[headstone|pebble]", host) and getpass.getuser()=="clarks":
-    configfile: "config_stephen_babraham.yaml"
 else:
     print("Computer not recognised")
     exit()
@@ -25,29 +21,28 @@ else:
 
 rule all:
     input: 
-        config["directories"]["results"]+"/met/stats/sample_metadata_after_met_stats.txt.gz",
-        config["directories"]["results"]+"/acc/stats/sample_metadata_after_acc_stats.txt.gz",
-        config["directories"]["results"]+"/met/stats/met_stats_per_chr.txt.gz",
-        config["directories"]["results"]+"/acc/stats/acc_stats_per_chr.txt.gz",
-        config["directories"]["results"]+"/met/stats/pdf/CG_coverage_per_stage.pdf",
-        config["directories"]["results"]+"/acc/stats/pdf/GC_coverage_per_stage.pdf",
-        config["directories"]["results"]+"/met/qc/sample_metadata_after_met_qc.txt.gz",
-        config["directories"]["results"]+"/acc/qc/sample_metadata_after_acc_qc.txt.gz",
-        config["directories"]["results"]+"/metacc/qc/sample_metadata_after_metacc_qc.txt.gz",
-        expand(config["directories"]["processed_data"]+"/met/feature_level/{genomic_context}.tsv.gz", genomic_context=config["genomic_contexts"]),
-        expand(config["directories"]["processed_data"]+"/acc/feature_level/{genomic_context}.tsv.gz", genomic_context=config["genomic_contexts"]),
-        expand(config["directories"]["results"]+"/metacc/boxplots_feature_level/boxplots_metacc_{genomic_context}.pdf", genomic_context=config["genomic_contexts"]),
-        expand(config["directories"]["processed_data"]+"/met/cpg_level/pseudobulk/{pseudobulk_group_by}/completed.txt", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
-        expand(config["directories"]["processed_data"]+"/acc/gpc_level/pseudobulk/{pseudobulk_group_by}/completed.txt", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
-        expand(config["directories"]["processed_data"]+"/met/cpg_level/pseudobulk/{pseudobulk_group_by}", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
-        expand(config["directories"]["processed_data"]+"/acc/gpc_level/pseudobulk/{pseudobulk_group_by}", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
-        config["directories"]["results"]+"/metacc/profiles/tss/precomputed_metacc_prom_200_200.txt.gz",
-        config["directories"]["results"]+"/metacc/profiles/multiome_peaks/precomputed_metacc_multiome_peaks.txt.gz",
+        config["directories"]["results"]+"/met/stats/sample_metadata_after_met_stats.txt.gz"
+        # config["directories"]["results"]+"/acc/stats/sample_metadata_after_acc_stats.txt.gz",
+        # config["directories"]["results"]+"/met/stats/met_stats_per_chr.txt.gz",
+        # config["directories"]["results"]+"/acc/stats/acc_stats_per_chr.txt.gz",
+        # config["directories"]["results"]+"/met/stats/pdf/CG_coverage_per_stage.pdf",
+        # config["directories"]["results"]+"/acc/stats/pdf/GC_coverage_per_stage.pdf",
+        # config["directories"]["results"]+"/met/qc/sample_metadata_after_met_qc.txt.gz",
+        # config["directories"]["results"]+"/acc/qc/sample_metadata_after_acc_qc.txt.gz",
+        # config["directories"]["results"]+"/metacc/qc/sample_metadata_after_metacc_qc.txt.gz"
+        # expand(config["directories"]["processed_data"]+"/met/feature_level/{genomic_context}.tsv.gz", genomic_context=config["genomic_contexts"]),
+        # expand(config["directories"]["processed_data"]+"/acc/feature_level/{genomic_context}.tsv.gz", genomic_context=config["genomic_contexts"]),
+        # expand(config["directories"]["results"]+"/metacc/boxplots_feature_level/boxplots_metacc_{genomic_context}.pdf", genomic_context=config["genomic_contexts"]),
+        # expand(config["directories"]["processed_data"]+"/met/cpg_level/pseudobulk/{pseudobulk_group_by}/completed.txt", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
+        # expand(config["directories"]["processed_data"]+"/acc/gpc_level/pseudobulk/{pseudobulk_group_by}/completed.txt", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
+        # expand(config["directories"]["processed_data"]+"/met/cpg_level/pseudobulk/{pseudobulk_group_by}", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
+        # expand(config["directories"]["processed_data"]+"/acc/gpc_level/pseudobulk/{pseudobulk_group_by}", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
+        # config["directories"]["results"]+"/metacc/profiles/tss/precomputed_metacc_prom_200_200.txt.gz",
         # expand(config["directories"]["processed_data"]+"/met/bigwig/{pseudobulk_group_by}/completed.txt", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
         # expand(config["directories"]["processed_data"]+"/acc/bigwig/{pseudobulk_group_by}/completed.txt", pseudobulk_group_by=config["params"]["pseudobulk"]["group_by"]),
-        config["directories"]["results"]+"/metrna/coupling/precomputed_metrna_coupling.txt.gz",
-        config["directories"]["results"]+"/metacc/coupling/precomputed_metacc_coupling.txt.gz",
-        config["directories"]["results"]+"/accrna/coupling/precomputed_accrna_coupling.txt.gz"
+        # config["directories"]["results"]+"/metrna/coupling/precomputed_metrna_coupling.txt.gz",
+        # config["directories"]["results"]+"/metacc/coupling/precomputed_metacc_coupling.txt.gz",
+        # config["directories"]["results"]+"/accrna/coupling/precomputed_accrna_coupling.txt.gz"
     
 
 #################################
@@ -314,28 +309,6 @@ rule calculate_tss_profiles:
         "Rscript {input.script} --met_tile {params.met_tile} --acc_tile {params.acc_tile} --window_size {params.window_size} --metadata {input.metadata} \
         --anno prom_200_200 --outfile {output}  > {log}"
 
-
-rule calculate_profiles_multiome_peaks:
-    input:
-        script = config["scripts"]["calculate_tss_profiles"],
-        metadata = rules.parse_metadata_after_qc.output
-    output:
-        config["directories"]["results"]+"/metacc/profiles/multiome_peaks/precomputed_metacc_multiome_peaks.txt.gz",
-    params:
-        window_size = config["params"]["calculate_tss_profiles"]["window_size"],
-        met_tile = config["params"]["calculate_tss_profiles"]["met_tile"],
-        acc_tile = config["params"]["calculate_tss_profiles"]["acc_tile"]
-    log: 
-        "logs/calculate_tss_profiles_multiome_peaks.log"
-    threads: 
-        config["slurm"]["calculate_tss_profiles"]["threads"]
-    resources:
-        mem_mb = config["slurm"]["calculate_profiles_multiome_peaks"]["memory"]
-    shell:
-        "Rscript {input.script} --met_tile {params.met_tile} --acc_tile {params.acc_tile} --window_size {params.window_size} --metadata {input.metadata} \
-        --anno multiome_peaks --outfile {output} > {log}"
-
-
 rule plot_tss_profiles:
     input:
         script = config["scripts"]["plot_tss_profiles"],
@@ -406,7 +379,6 @@ rule pseudobulk_acc:
     shell:
         "Rscript {input.script} --indir {input.indir} --metadata {input.metadata} --context GC --group_by {wildcards.pseudobulk_group_by} \
         --ncores {params.ncores} --min_cells {params.min_cells} --outdir {params.outdir} > {log}"
-
 
 
 ############

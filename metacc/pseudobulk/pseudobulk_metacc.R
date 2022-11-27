@@ -35,7 +35,7 @@ source(here::here("metacc/pseudobulk/utils.R"))
 # args$indir <- file.path(io$basedir,"processed/met/cpg_level")
 # args$outdir <- file.path(io$basedir,"processed/met/cpg_level/pseudobulk")
 # args$featuresdir  <- file.path(io$basedir,"features/genomic_contexts")
-# args$metadata <- file.path(io$basedir,"results/met/qc/sample_metadata_after_met_qc.txt.gz")
+# args$metadata <- file.path(io$basedir,"results/met/qc/cell_metadata_after_met_qc.txt.gz")
 # args$context <- "CG"
 # args$group_by <- "sample"
 # args$min_cells <- 10
@@ -52,22 +52,22 @@ dir.create(args$outdir, showWarnings = F)
 ## Load metadata ##
 ###################
 
-sample_metadata <- fread(args$metadata) %>%
+cell_metadata.dt <- fread(args$metadata) %>%
   .[!is.na(celltype)]
 
 if (args$context=="CG") {
-  sample_metadata <- sample_metadata %>% .[pass_metQC==TRUE]
+  cell_metadata.dt <- cell_metadata.dt %>% .[pass_metQC==TRUE]
 } else {
-  sample_metadata <- sample_metadata %>% .[pass_accQC==TRUE]
+  cell_metadata.dt <- cell_metadata.dt %>% .[pass_accQC==TRUE]
 }
 
-stopifnot(args$group_by%in%colnames(sample_metadata))
-sample_metadata <- sample_metadata[!is.na(sample_metadata[[args$group_by]])]
+stopifnot(args$group_by%in%colnames(cell_metadata.dt))
+cell_metadata.dt <- cell_metadata.dt[!is.na(cell_metadata.dt[[args$group_by]])]
 
 # Filter groups by minimum number of cells
-sample_metadata <- sample_metadata[,N:=.N,by=c(args$group_by)] %>% .[N>=args$min_cells] %>% .[,N:=NULL]
+cell_metadata.dt <- cell_metadata.dt[,N:=.N,by=c(args$group_by)] %>% .[N>=args$min_cells] %>% .[,N:=NULL]
 
-table(sample_metadata[[args$group_by]])
+table(cell_metadata.dt[[args$group_by]])
 
 ##############################
 ## Load data and pseudobulk ##
@@ -80,8 +80,8 @@ if (args$ncores>1) {
   plan(sequential)
 }
 
-# i <- unique(sample_metadata[[args$group_by]])[1]
-for (i in unique(sample_metadata[[args$group_by]])) {
+# i <- unique(cell_metadata.dt[[args$group_by]])[1]
+for (i in unique(cell_metadata.dt[[args$group_by]])) {
   outfile = sprintf("%s/%s.tsv.gz",args$outdir,i)
   if (file.exists(outfile)) {
     print(sprintf("%s already exists, skipping...",outfile))
@@ -89,9 +89,9 @@ for (i in unique(sample_metadata[[args$group_by]])) {
     
     # Define input files 
     if (args$context=="CG") {
-      cells <- sample_metadata[eval(as.name(args$group_by))==i,id_met]
+      cells <- cell_metadata.dt[eval(as.name(args$group_by))==i,id_met]
     } else {
-      cells <- sample_metadata[eval(as.name(args$group_by))==i,id_acc]
+      cells <- cell_metadata.dt[eval(as.name(args$group_by))==i,id_acc]
     }
     
     if (args$test) cells <- head(cells,n=5)
@@ -130,6 +130,6 @@ for (i in unique(sample_metadata[[args$group_by]])) {
 ## Save group statistics ##
 ###########################
 
-tmp <- table(sample_metadata[[args$group_by]])
+tmp <- table(cell_metadata.dt[[args$group_by]])
 to_save.dt <- data.table(group=names(tmp), N=tmp)
 fwrite(to_save.dt, file=file.path(args$outdir,"stats.txt"), quote=F, col.names=T, sep="\t")

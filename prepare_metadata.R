@@ -12,3 +12,7 @@ colnames(bar)
 bar <- bar %>% merge(foo[,c("cell","id_met","id_acc")], by="cell")
 
 fwrite(bar,"/Users/argelagr/data/Wang2021/cell_metadata.txt.gz", quote = F, sep="\t", na="NA")
+
+baz <- fread("/Users/argelagr/data/Wang2021/cell_metadata.txt")
+
+table(baz$celltype)
