@@ -83,17 +83,17 @@ if (args$context=="CG") {
   table(cell_metadata.dt$pass_accQC)
 }
 
-#########################################################
-## Plot fraction of cells that pass QC for each sample ##
-#########################################################
+############################################################
+## Plot fraction of cells that pass QC for each cell type ##
+############################################################
 
 if (args$context=="CG") {
-  to.plot <- cell_metadata.dt %>% .[!is.na(id_met)] %>% .[,mean(pass_metQC,na.rm=T), by=c("embryo")]
+  to.plot <- cell_metadata.dt %>% .[!is.na(id_met)] %>% .[,mean(pass_metQC,na.rm=T), by="celltype"]
 } else if (args$context=="GC") {
-  to.plot <- cell_metadata.dt %>% .[!is.na(id_acc)]  %>% .[,mean(pass_accQC,na.rm=T), by=c("embryo")]
+  to.plot <- cell_metadata.dt %>% .[!is.na(id_acc)]  %>% .[,mean(pass_accQC,na.rm=T), by="celltype"]
 }
 
-p <- ggbarplot(to.plot, x="embryo", y="V1", fill="gray70") +
+p <- ggbarplot(to.plot, x="celltype", y="V1", fill="gray70") +
   # scale_fill_manual(values=opts$stage.colors) +
   labs(x="", y="Fraction of cells that pass QC") +
   # facet_wrap(~stage)
@@ -120,20 +120,20 @@ if (args$context=="CG") {
 
 to.plot.melted <- to.plot %>% 
   .[,log10_N:=log10(N)] %>%
-  melt(id.vars=c("embryo","cell"), measure.vars=c("log10_N","rate")) 
+  melt(id.vars=c("celltype","cell"), measure.vars=c("log10_N","rate")) 
 
 # tmp <- data.table(
-#   variable = c("log10_N", "rate","rate"),
+#   variable = c("log10_N", "rate","rate"), 
 #   value = c(log10(args$minimum_number_sites), args$min_rate, args$max_rate)
 # )
 
-p <- ggplot(to.plot.melted, aes_string(x="embryo", y="value")) +
+p <- ggplot(to.plot.melted, aes_string(x="celltype", y="value")) +
     geom_jitter(size=0.5, alpha=0.5, width=0.1) +
     geom_boxplot(outlier.shape=NA, coef=1, fill="gray70", alpha=0.8) +
     facet_wrap(~variable, scales="free_y", nrow=1, labeller = as_labeller(c("log10_N"="Num. of observations", "rate"="Rate"))) +
     # geom_hline(aes(yintercept=value), linetype="dashed", data=tmp) + 
     guides(x = guide_axis(angle = 90)) +
-    # scale_fill_manual(values=opts$stage.colors) +
+    scale_fill_manual(values=opts$celltype.colors) +
     labs(x="", y="") +
     theme_classic() +
     theme(

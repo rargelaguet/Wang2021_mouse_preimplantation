@@ -4,16 +4,13 @@ here::i_am("metacc/stats/plot_stats.R")
 source(here::here("settings.R"))
 source(here::here("utils.R"))
 
-
 ######################
 ## Define arguments ##
 ######################
 
 p <- ArgumentParser(description='')
-# p$add_argument('--query_samples',   type="character",   nargs='+',  help='Query samples')
 p$add_argument('--metadata',    type="character",  help='Cell metadata file')
 p$add_argument('--context',  type="character",              help='cg/CG or gc/GC')
-# p$add_argument('--celltype_label',  type="character",              help='celltype label')
 p$add_argument('--outdir',          type="character",               help='Output directory')
 args <- p$parse_args(commandArgs(TRUE))
 
@@ -39,20 +36,18 @@ dir.create(args$outdir, showWarnings=F)
 ## Load metadata ##
 ###################
 
-sample_metadata <- fread(args$metadata)
+cell_metadata.dt <- fread(args$metadata)
 
-stopifnot(args$celltype_label%in%colnames(sample_metadata))
+stopifnot(args$celltype_label%in%colnames(cell_metadata.dt))
 
 # Merge with cell metadata
 if (args$context=="CG") {
-  to.plot <- sample_metadata %>%
+  to.plot <- cell_metadata.dt %>%
     .[!is.na(id_met)] %>%
-    .[,c("cell","plate","sample","stage","celltype","nCG","met_rate")] %>% 
     setnames(c("nCG","met_rate"),c("N","rate"))
 } else if (args$context=="GC") {
-  to.plot <- sample_metadata %>%
+  to.plot <- cell_metadata.dt %>%
     .[!is.na(id_acc)] %>%
-    .[,c("cell","plate","sample","stage","celltype","nGC","acc_rate")] %>% 
     setnames(c("nGC","acc_rate"),c("N","rate"))
 }
 
@@ -62,7 +57,7 @@ color <- ifelse(args$context=="CG","#F8766D","#00BFC4")
 ## Boxplots with coverage per stage ##
 ######################################
 
-p <- ggboxplot(to.plot, x = "stage", y = "N", outlier.shape=NA, fill=color, alpha=0.75) +
+p <- ggboxplot(to.plot, x = "celltype", y = "N", outlier.shape=NA, fill=color, alpha=0.75) +
   geom_jitter(alpha=0.5, fill=color, size=0.75, shape=21, width=0.1) +
   yscale("log10", .format = TRUE) +
   labs(x="", y="Number of observations") +
@@ -80,7 +75,7 @@ dev.off()
 ## Boxplots with rate per sample ##
 ###################################
 
-p <- ggboxplot(to.plot, x = "sample", y = "rate", outlier.shape=NA, fill=color, alpha=0.75) +
+p <- ggboxplot(to.plot, x = "embryo", y = "rate", outlier.shape=NA, fill=color, alpha=0.75) +
   geom_jitter(alpha=0.5, fill=color, size=0.75, shape=21, width=0.1) +
   labs(x="", y="Rate") +
   guides(x = guide_axis(angle = 90)) +

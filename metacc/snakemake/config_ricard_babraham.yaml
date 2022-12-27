@@ -65,9 +65,9 @@ params:
         min_rate: 0
         max_rate: 100
     qc_acc:
-        minimum_number_sites: 10000
+        minimum_number_sites: 100000
         min_rate: 10
-        max_rate: 40
+        max_rate: 80
     pseudobulk:
         group_by: ["celltype"]
         # group_by: ["celltype", "celltype2", "celltype3"]

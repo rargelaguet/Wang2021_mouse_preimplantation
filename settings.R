@@ -65,6 +65,8 @@ opts$celltypes <- opts$stages <- c(
   "TE" 
 )
 
+opts$stage.colors <- opts$celltype.colors <- viridis::viridis(n=length(opts$celltypes))
+
 # opts$celltype.colors = c(
 #   "zygote" = "",
 #   "2cell" = "",

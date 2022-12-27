@@ -8,13 +8,13 @@ source(here::here("utils.R"))
 ## Define settings ##
 #####################
 
-io$indir <- file.path(io$basedir,"original/met")
-io$outdir <- file.path(io$basedir,"processed/met/cpg_level"); dir.create(io$outdir, showWarnings=F)
-opts$context <- "CG"
+# io$indir <- file.path(io$basedir,"original/met")
+# io$outdir <- file.path(io$basedir,"processed/met/cpg_level"); dir.create(io$outdir, showWarnings=F)
+# opts$context <- "CG"
 
-# io$indir <- file.path(io$basedir,"original/acc")
-# io$outdir <- file.path(io$basedir,"processed/acc/gpc_level"); dir.create(io$outdir, showWarnings=F)
-# opts$context <- "GC"
+io$indir <- file.path(io$basedir,"original/acc")
+io$outdir <- file.path(io$basedir,"processed/acc/gpc_level"); dir.create(io$outdir, showWarnings=F)
+opts$context <- "GC"
 
 ##################
 ## Define cells ##
@@ -30,6 +30,8 @@ if (opts$context=="CG") {
 # cells <- head(cells,n=3)
 stopifnot(length(setdiff(cells,gsub(".gz","",list.files(io$indir))))==0)
 # cell_metadata.dt[!id_acc%in%gsub(".gz","",list.files(io$indir))]
+
+cells <- setdiff(list.files(io$indir) %>% gsub(".gz","",.), list.files(io$outdir) %>% gsub(".tsv.gz","",.))
 
 ##################
 ## Process data ##

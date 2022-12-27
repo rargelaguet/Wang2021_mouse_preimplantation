@@ -41,7 +41,7 @@ opts$chr <- paste0("chr",c(1:19,"X"))
 ## Load metadata ##
 ###################
 
-sample_metadata <- fread(args$metadata) 
+cell_metadata.dt <- fread(args$metadata) 
 
 ################
 ## Load stats ##
@@ -53,19 +53,19 @@ stats.dt <- fread(args$stats) %>%
 # Merge with cell metadata
 if (args$context=="CG") {
   to.plot <- stats.dt %>%
-    merge(sample_metadata[pass_metQC==TRUE,c("cell","id_met","sample","stage","celltype")],by="id_met") %>%
+    merge(cell_metadata.dt[pass_metQC==TRUE,c("cell","id_met","celltype")],by="id_met") %>%
     setnames(c("nCG","met_rate"),c("N","rate"))
 } else if (args$context=="GC") {
   to.plot <- stats.dt %>%
-    merge(sample_metadata[pass_accQC==TRUE,c("cell","id_acc","sample","stage","celltype")],by="id_acc") %>%
+    merge(cell_metadata.dt[pass_accQC==TRUE,c("cell","id_acc","celltype")],by="id_acc") %>%
     setnames(c("nGC","acc_rate"),c("N","rate"))
 }
 
-##################################################
-## Boxplots with rate per chromosome and sample ##
-##################################################
+####################################################
+## Boxplots with rate per chromosome and celltype ##
+####################################################
 
-p <- ggboxplot(to.plot[N>=100], x = "sample", y = "rate", outlier.shape=NA, fill="sample", alpha=0.5) +
+p <- ggboxplot(to.plot[N>=100], x = "celltype", y = "rate", outlier.shape=NA, fill="celltype", alpha=0.5) +
   facet_wrap(~chr, scales="fixed") +
   scale_fill_brewer(palette="Dark2") +
   labs(x="", y="Rate") +
