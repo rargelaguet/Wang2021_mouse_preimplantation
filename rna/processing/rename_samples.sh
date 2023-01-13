@@ -400,8 +400,5 @@ ln -sf SRR10055841.cntTable.gz	GSM4056323_32-cell.cntTable.gz
 ln -sf SRR10055842.cntTable.gz	GSM4056324_32-cell.cntTable.gz
 ln -sf SRR10055843.cntTable.gz	GSM4056325_32-cell.cntTable.gz
 
-# samples missing
-# GSM4056174_8-cell.cntTable.gz -> SRR10055692.cntTable.gz
-# GSM4055925_Zygote1.cntTable.gz -> SRR10055443.cntTable.gz
 # print broken symbolic links
 find . -type l ! -exec test -e {} \; -print

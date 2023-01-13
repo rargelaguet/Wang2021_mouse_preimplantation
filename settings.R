@@ -44,7 +44,8 @@ io$acc_data_pseudobulk_raw <- paste0(io$basedir,"/processed/acc/gpc_level/pseudo
 io$acc_data_parsed <- paste0(io$basedir,"/processed/acc/feature_level")
 
 # RNA
-io$rna.sce <- paste0(io$basedir,"/processed/rna/SingleCellExperiment.rds")
+# io$rna.sce <- paste0(io$basedir,"/processed/rna/SingleCellExperiment.rds")
+io$rna.sce <- io$gene.sce <- paste0(io$basedir,"/processed/rna/gene_SingleCellExperiment.rds")
 
 # Other
 io$features.dir <- paste0(io$basedir,"/features/genomic_contexts")
@@ -55,7 +56,7 @@ io$features.dir <- paste0(io$basedir,"/features/genomic_contexts")
 
 opts <- list()
 
-opts$celltypes <- opts$stages <- c(
+opts$celltypes <- c(
   "zygote",
   "2cell", 
   "early_4cell", 
@@ -64,6 +65,16 @@ opts$celltypes <- opts$stages <- c(
   "16cell", 
   "ICM", 
   "TE" 
+)
+
+opts$stages <- c(
+  "zygote",
+  "2cell", 
+  "4cell", 
+  "late_4cell", 
+  "8cell", 
+  "16cell", 
+  "32cell"
 )
 
 opts$stage.colors <- opts$celltype.colors <- viridis::viridis(n=length(opts$celltypes))

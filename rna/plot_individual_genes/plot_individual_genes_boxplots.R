@@ -14,26 +14,41 @@ io$outdir <- paste0(io$basedir,"/results/rna/individual_genes"); dir.create(io$o
 
 ## Define options ##
 
-opts$celltypes = c(
+# opts$celltypes = c(
+#   "zygote",
+#   "2cell", 
+#   "early_4cell", 
+#   "late_4cell", 
+#   "8cell", 
+#   "16cell", 
+#   "ICM", 
+#   "TE" 
+# )
+
+opts$stages <- c(
   "zygote",
   "2cell", 
-  "early_4cell", 
+  "4cell", 
   "late_4cell", 
   "8cell", 
   "16cell", 
-  "ICM", 
-  "TE" 
+  "32cell"
 )
 
 ##########################
 ## Load sample metadata ##
 ##########################
 
-cell_metadata.dt <- fread(io$metadata) %>% 
-  .[pass_rnaQC==T & celltype%in%opts$celltypes] %>%
-  .[,celltype:=factor(celltype,levels=opts$celltypes)]
+# cell_metadata.dt <- fread(io$metadata) %>% 
+#   .[pass_rnaQC==T & celltype%in%opts$celltypes] %>%
+#   .[,celltype:=factor(celltype,levels=opts$celltypes)]
+# table(cell_metadata.dt$celltype)
 
-table(cell_metadata.dt$celltype)
+cell_metadata.dt <- fread(io$metadata) %>% 
+  .[,stage:=gsub("-","",stage)] %>%
+  .[pass_rnaQC==T & stage%in%opts$stages] %>%
+  .[,stage:=factor(stage,levels=opts$stages)]
+table(cell_metadata.dt$stage)
 
 ###############
 ## Load data ##
@@ -49,6 +64,7 @@ sce <- load_SingleCellExperiment(
 # Add sample metadata as colData
 colData(sce) <- cell_metadata.dt %>% tibble::column_to_rownames("cell") %>% DataFrame
 
+rowData(sce)
 #############################
 ## Plot one gene at a time ##
 #############################

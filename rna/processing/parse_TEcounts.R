@@ -6,7 +6,7 @@ source(here::here("utils.R"))
 #####################
 
 io$inputdir <- file.path(io$basedir,"TEcounts")
-io$outdir <- file.path(io$basedir,"processed"); dir.create(io$outdir, showWarnings = F)
+io$outdir <- file.path(io$basedir,"processed/rna"); dir.create(io$outdir, showWarnings = F)
 
 ##########################
 ## Load sample metadata ##
@@ -21,6 +21,8 @@ opts$samples <- unique(sample_metadata.dt$alias)
 ###############
 
 stopifnot(file.exists(file.path(io$inputdir,sprintf("%s.cntTable.gz",opts$samples))))
+# opts$samples[!file.exists(file.path(io$inputdir,sprintf("%s.cntTable.gz",opts$samples)))]
+# opts$samples <- opts$samples[file.exists(file.path(io$inputdir,sprintf("%s.cntTable.gz",opts$samples)))]
 
 gene_expression_list <- list(); te_expression_list <- list()
           
@@ -108,7 +110,7 @@ te_expression.mtx <- te_expression.mtx[te_metadata.dt$feature,]
 ## Save ##
 ##########
 
-write.table(gene_expression.mtx, file.path(io$outdir,"gene_counts.txt.gz"), sep = ",", quote = F, na="NA", row.names = T, col.names = T)
-write.table(te_expression.mtx, file.path(io$outdir,"TE_counts.txt.gz"), sep = ",", quote = F, na="NA", row.names = T, col.names = T)
-saveRDS(te.se, file.path(io$outdir,"TE_SingleCellExperiment.rds"))
-saveRDS(genes.se, file.path(io$outdir,"gene_SingleCellExperiment.rds"))
+write.table(gene_expression.mtx, file.path(io$outdir,"gene_counts_split.txt.gz"), sep = ",", quote = F, na="NA", row.names = T, col.names = T)
+write.table(te_expression.mtx, file.path(io$outdir,"TE_counts_split.txt.gz"), sep = ",", quote = F, na="NA", row.names = T, col.names = T)
+saveRDS(te.se, file.path(io$outdir,"TE_SingleCellExperiment_split.rds"))
+saveRDS(genes.se, file.path(io$outdir,"gene_SingleCellExperiment_split.rds"))
