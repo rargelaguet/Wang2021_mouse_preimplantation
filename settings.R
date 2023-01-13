@@ -30,7 +30,8 @@ if (Sys.info()[['nodename']]=="rargelaguet.local") {
   stop("Computer not recognised")
 }
 
-io$metadata <- paste0(io$basedir,"/cell_metadata.txt.gz")
+# io$metadata <- paste0(io$basedir,"/cell_metadata.txt.gz")
+io$metadata <- paste0(io$basedir,"/cell_metadata.txt")
 
 # Methylation
 io$met_data_raw <- paste0(io$basedir,"/processed/met/cpg_level")
